@@ -17,6 +17,12 @@ export const defaultTheme={
     'green-500': '#00875f',
     'green-700': '#015f43',
 
+    
+    'background-white':'#f7f7f7',
+    'background-blueLigth':'#304ffe',
+
+    'text-color-white':'#ffff',
+
     'red-500': '#ab222e',
     'red-700': '#7a1921',
 
