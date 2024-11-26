@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Button, Container, Divider, Link, TextField, Typography } from '@mui/material'
+import { Avatar, Box, Button, Container, Divider, Link, TextField, Typography } from '@mui/material'
 import { Google, Visibility, VisibilityOff } from '@mui/icons-material'
 import { NavLink } from 'react-router-dom'
 
@@ -29,10 +29,23 @@ export  function Login() {
           
         }}
       >
-        {/* Arrow Icon */}
-        <Box sx={{ width: '48px', height: '48px', mb: 4 }}>
-          
-        </Box>
+        <Box sx={{
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  mb: 4,
+  textAlign: 'center'
+}}>
+  <Avatar
+    sx={{ width: 100, height: 100, marginBottom: 2 }}
+    src="https://bagcoin.org/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdnzambf4m%2Fimage%2Fupload%2Fv1708987396%2FBagCoin_Blog%2Fbag_shine____hetbmm.gif&w=256&q=75"  // Caminho da sua logo
+    alt="Logo"
+  />
+  <Typography variant="h3" sx={{ marginBottom: 3 }}>
+    BagCoin
+  </Typography>
+</Box>
 
         {/* Title */}
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'medium' }}>

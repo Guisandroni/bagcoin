@@ -12,7 +12,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, showSearch = fa
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
       <Box >
-        <Typography variant="h6" fontWeight="bold" color="text.secondary">{title}</Typography>
+        <Typography variant="h6" fontWeight="bold" color="#ffffff">{title}</Typography>
         <Typography variant="h6" fontWeight="bold">{subtitle}</Typography>
       </Box>
       <Box>

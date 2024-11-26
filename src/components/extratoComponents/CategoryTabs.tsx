@@ -47,7 +47,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           },
         }}
       >
-        cartões
+        Despesas
       </Button>
       <Button
         startIcon={<Building2 size={18} />}
@@ -65,7 +65,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           },
         }}
       >
-        contas
+        Receitas
       </Button>
       <IconButton sx={{ bgcolor: '#F1F5F9', width: 36, height: 36 }}>
         <Download size={18} />
