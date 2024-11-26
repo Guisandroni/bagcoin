@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Eye, PiggyBank, CreditCard, DollarSign } from 'lucide-react';
 import CreateIcon from '@mui/icons-material/Create';
+import EditarOrcamentoModal from './editarSaldo';
+
 const Card = styled.div`
   background: #f5f6fa;
   border-radius: 1rem;
@@ -57,23 +59,30 @@ const StatCard = styled.div<{ type: 'income' | 'expense' }>`
 `;
 
 const IconsStyled = styled.div`
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
-`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 
 const BalanceCard = () => {
+  const [balance, setBalance] = useState(3480); // Inicializando com o saldo atual
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para abrir o modal
+
+  // Função para atualizar o saldo após salvar no modal
+  const handleSaveBalance = (novoSaldo: number) => {
+    setBalance(novoSaldo); // Atualiza o saldo com o novo valor
+  };
+
   return (
     <Card>
       <BalanceHeader>
         <Balance>
           <h3>saldo atual</h3>
-          
-          <h2>R$ 3.480,00</h2>
+          <h2>R$ {balance.toFixed(2)}</h2> {/* Exibe o saldo com 2 casas decimais */}
         </Balance>
         <IconsStyled>
-        <CreateIcon />
-        <Eye size={24} />
+          <CreateIcon onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }} />
+          <Eye size={24} />
         </IconsStyled>
       </BalanceHeader>
       
@@ -87,6 +96,14 @@ const BalanceCard = () => {
           <span>R$ 1.520,00</span>
         </StatCard>
       </StatsGrid>
+
+      {/* Modal para editar o saldo */}
+      <EditarOrcamentoModal 
+        open={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        saldoAtual={balance} 
+        onSave={handleSaveBalance} 
+      />
     </Card>
   );
 };

@@ -20,7 +20,7 @@ function Home() {
     <AppContainer>
       <Header />
       <BalanceCard />
-      
+    
       <GoalsSection />
       <TransactionsList />
   
