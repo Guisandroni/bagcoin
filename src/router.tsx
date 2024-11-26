@@ -6,6 +6,7 @@ import { Extrato } from "./screens/extrato";
 import { Profile } from "./screens/profile";
 import { Login } from "./screens/login";
 import LoginLayout from "./layoutLogin";
+import { Icon } from "./screens/icon";
 
 
 
@@ -17,6 +18,9 @@ export function Router(){
        
       <Routes>
       <Route path="/login" element={<LoginLayout><Login /></LoginLayout>} />
+      <Route path="/icon" element={<LoginLayout><Icon /></LoginLayout>} />
+
+      
 
         <Route path="/" element={<DefaultLayout />}>
           <Route path="/" element={<Home />} /> 

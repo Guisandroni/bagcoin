@@ -45,9 +45,7 @@ export  function Login() {
   <Typography variant="h3" sx={{ marginBottom: 3 }}>
     BagCoin
   </Typography>
-  <Typography variant="h6" sx={{ marginBottom: 3 }}>
-Aplicação para Gestão Financeira 
- </Typography>
+  
 </Box>
 
         {/* Title */}

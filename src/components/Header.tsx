@@ -37,7 +37,7 @@ const UserName = styled.div`
 const Header = () => {
   return (
     <HeaderContainer>
-      <Link to='/login'>
+      <Link to='/icon'>
       <Menu size={24} />
       </Link>
       
