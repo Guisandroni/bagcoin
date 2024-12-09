@@ -1,153 +1,141 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Home, List, PlusCircle, BarChart2, User } from 'lucide-react';
-import { TransactionForm } from './transaction'; // Certifique-se de que o caminho esteja correto
 import { NavLink } from 'react-router-dom';
+import { Home, List, PlusCircle, BarChart2, User, Tag } from 'lucide-react';
+import { 
+  AppBar, 
+  Toolbar, 
+  IconButton, 
+  Typography, 
+  Dialog, 
+  DialogContent, 
+  Button,
+  styled
+} from '@mui/material';
+import { TransactionForm } from './transaction';
+import { CategoryForm } from './CategoryForm';
 
-const Nav = styled.nav`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #fff;
-  display: flex;
-  justify-content: space-around;
-  padding: 0.75rem 0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-`;
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  top: 'auto',
+  bottom: 0,
+  background: theme.palette.background.paper,
+}));
 
-const NavButton = styled.button<{ $active?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  background: none;
-  border: none;
-  color: ${(props) => (props.$active ? '#1a73e8' : '#666')};
+const StyledToolbar = styled(Toolbar)({
+  justifyContent: 'space-around',
+});
 
-  span {
-    font-size: 0.75rem;
-  }
-`;
+const NavButton = styled(IconButton)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  color: theme.palette.text.secondary,
+  '&.active': {
+    color: theme.palette.primary.main,
+  },
+}));
 
-const AddButton = styled.button`
-  background: #1a73e8;
-  border: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  transform: translateY(-24px);
-`;
+const AddButton = styled(IconButton)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+  width: 56,
+  height: 56,
+  transform: 'translateY(-50%)',
+  '&:hover': {
+    background: theme.palette.primary.dark,
+  },
+}));
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-`;
+const MenuDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialog-paper': {
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(2),
 
-const Menu = styled.div`
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width:80%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-`;
+  },
+}));
 
-const MenuButton = styled.button`
-  padding: 12px;
-  border: none;
-  background: #1a73e8;
-  color: white;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  &:hover {
-    background: #155bb5;
-  }
-`;
+const MenuButton = styled(Button)(({ theme }) => ({
+  padding: theme.spacing(1.5),
+  fontSize: '1rem',
+  margin:'0.5rem 0',
+  borderRadius:'6px'
+}));
 
 const BottomNav = () => {
-  const [showMenu, setShowMenu] = useState(false); // Controla o menu de opções
-  const [showForm, setShowForm] = useState(false); // Controla a exibição do formulário
-  const [transactionType, setTransactionType] = useState<'income' | 'expense' | 'goal' | null>(null); // Tipo selecionado
+  const [showMenu, setShowMenu] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [transactionType, setTransactionType] = useState<'income' | 'expense' | 'goal' | null>(null);
 
   const handleOptionClick = (type: 'income' | 'expense' | 'goal') => {
     setTransactionType(type);
-    setShowMenu(false); // Fecha o menu
-    setShowForm(true); // Abre o formulário
+    setShowMenu(false);
+    setShowForm(true);
+  };
+
+  const handleCategoryClick = () => {
+    setShowMenu(false);
+    setShowCategoryForm(true);
   };
 
   return (
     <>
-      {/* Menu de opções */}
-      {showMenu && (
-        <Overlay>
-          <Menu>
-            <MenuButton onClick={() => handleOptionClick('income')}>Receitas</MenuButton>
-            <MenuButton onClick={() => handleOptionClick('expense')}>Despesas</MenuButton>
-            <MenuButton onClick={() => handleOptionClick('goal')}>Metas</MenuButton>
-            <MenuButton onClick={() => setShowMenu(false)} style={{ background: '#ccc' }}>
-              Cancelar
-            </MenuButton>
-          </Menu>
-        </Overlay>
-      )}
+      <MenuDialog open={showMenu} onClose={() => setShowMenu(false)}>
+        <DialogContent>
+          <MenuButton fullWidth variant="contained" onClick={() => handleOptionClick('income')}>
+            Receitas
+          </MenuButton>
+          <MenuButton fullWidth variant="contained" onClick={() => handleOptionClick('expense')}>
+            Despesas
+          </MenuButton>
+          <MenuButton fullWidth variant="contained" onClick={() => handleOptionClick('goal')}>
+            Metas
+          </MenuButton>
+          <MenuButton fullWidth variant="contained" onClick={handleCategoryClick}>
+            Criar Categoria
+          </MenuButton>
+          <MenuButton fullWidth variant="outlined" onClick={() => setShowMenu(false)}>
+            Cancelar
+          </MenuButton>
+        </DialogContent>
+      </MenuDialog>
 
-      {/* Exibição do formulário */}
       {showForm && transactionType && (
-        <Overlay>
-          <TransactionForm
-            type={transactionType}
-            onClose={() => setShowForm(false)} // Fecha o formulário
-          />
-        </Overlay>
+        <TransactionForm
+          type={transactionType}
+          onClose={() => setShowForm(false)}
+        />
       )}
 
-      <Nav>
-        <NavButton $active>
-          <Home size={20} />
-          <NavLink to='/'>
-          <span>Início</span>
-          </NavLink>
-        </NavButton>
-        <NavButton>
-          <List size={20} />
-          <NavLink to='/extrato'>
-          <span>Extrato</span>
-          </NavLink>
-        </NavButton>
-        <AddButton onClick={() => setShowMenu(true)}> {/* Abre o menu */}
-          <PlusCircle size={24} />
-        </AddButton>
-        <NavButton>
-          <BarChart2 size={20} />
-          <NavLink to='/reports'>
-          <span>Relatórios</span>
-          </NavLink>
-        </NavButton>
-        <NavButton>
-          <User size={20} />
-          <NavLink to='/profile'>
-          <span>Perfil</span>
-          </NavLink>
-        </NavButton>
-      </Nav>
+      {showCategoryForm && (
+        <CategoryForm onClose={() => setShowCategoryForm(false)} />
+      )}
+
+      <StyledAppBar position="fixed" color="default" elevation={3}>
+        <StyledToolbar>
+          <NavButton component={NavLink} to="/" exact>
+            <Home />
+            <Typography variant="caption">Início</Typography>
+          </NavButton>
+          <NavButton component={NavLink} to="/extrato">
+            <List />
+            <Typography variant="caption">Extrato</Typography>
+          </NavButton>
+          <AddButton onClick={() => setShowMenu(true)}>
+            <PlusCircle />
+          </AddButton>
+          <NavButton component={NavLink} to="/reports">
+            <BarChart2 />
+            <Typography variant="caption">Relatórios</Typography>
+          </NavButton>
+          <NavButton component={NavLink} to="/profile">
+            <User />
+            <Typography variant="caption">Perfil</Typography>
+          </NavButton>
+        </StyledToolbar>
+      </StyledAppBar>
     </>
   );
 };
 
 export default BottomNav;
+

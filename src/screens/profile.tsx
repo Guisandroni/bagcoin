@@ -32,15 +32,15 @@ export  function Profile() {
   const [value, setValue] = useState(4)
 
   const menuItems = [
-    { icon: <Person />, text: 'editar perfil' },
+    { icon: <Person />, text: 'Editar Perfil' },
     { icon: <Settings />, text: 'configurações' },
-    { icon: <Star />, text: 'meu plano' },
-    { icon: <CreditCard />, text: 'meus cartões' },
-    { icon: <AccountBalance />, text: 'minhas contas' },
+    // { icon: <Star />, text: 'meu plano' },
+    // { icon: <CreditCard />, text: 'meus cartões' },
+    // { icon: <AccountBalance />, text: 'minhas contas' },
     { icon: <Category />, text: 'minhas categorias' },
-    { icon: <ViewList />, text: 'minhas subcategorias' },
+    // { icon: <ViewList />, text: 'minhas subcategorias' },
     { icon: <Timeline />, text: 'minhas metas' },
-    { icon: <Warning />, text: 'meus limites' },
+    // { icon: <Warning />, text: 'meus limites' },
     { icon: <Flag />, text: 'sugestões e problemas' },
     { icon: <Download />, text: 'exportar dados' },
     { icon: <Description />, text: 'termos de uso' },

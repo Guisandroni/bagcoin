@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+'use client'
+
+import { useState } from 'react'
 import { 
-  TextField, 
-  Button, 
+  TextField,
+  Button,
   IconButton,
   Select,
   MenuItem,
@@ -11,139 +12,237 @@ import {
   Box,
   Typography,
   ToggleButtonGroup,
-  ToggleButton
-} from '@mui/material';
-import { ArrowLeft, Calculator } from 'lucide-react';
+  ToggleButton,
+  Paper,
+  Slide,
+  alpha,
+  styled
+} from '@mui/material'
+import { ArrowLeft, Calculator, Tag, Calendar, ListPlus } from 'lucide-react'
 
-const Container = styled.div<{ type: 'income' | 'expense' | 'goal' }>`
-  min-height: 20vh;
-  padding: 1.5rem;
-  margin: 2rem 2rem 0;
-  background-color: ${({ type }) => 
-    type === 'expense' ? '#8B0000' : type === 'income' ? '#006400' : '#FFA500'};
-  color: white;
-  border-radius: 12px;
-`;
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  margin: 0,
+  borderRadius: '24px 24px 0 0',
+  zIndex: 1200,
+  overflow: 'hidden',
+}))
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-`;
+const Container = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'type'
+})<{ type: 'income' | 'expense' | 'goal' }>(({ theme, type }) => {
+  const colors = {
+    income: '#00a152',
+    expense: '#d32f2f',
+    goal: '#f57c00'
+  }
+  
+  return {
+    minHeight: '20vh',
+    padding: '1.5rem',
+    backgroundColor: colors[type],
+    color: 'white',
+    borderRadius: '24px 24px 0 0',
+    transition: 'all 0.3s ease',
+  }
+})
 
-const Form = styled.form`
-  background: white;
-  border-radius: 12px 12px 0 0;
-  padding: 15px;
-  margin-top: 15px;
-  min-height: auto;
-`;
+const Form = styled(Box)(({ theme }) => ({
+  background: theme.palette.background.paper,
+  borderRadius: '24px 24px 0 0',
+  padding: '24px',
+  marginTop: '16px',
+  minHeight: '60vh',
+}))
+
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButton-root': {
+    border: `1px solid ${theme.palette.divider}`,
+    '&.Mui-selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.dark,
+      },
+    },
+  },
+}))
 
 interface TransactionFormProps {
-  type: 'income' | 'expense' | 'goal';
-  onClose: () => void;  // Função de fechamento que pode ser passada como prop
+  type: 'income' | 'expense' | 'goal'
+  onClose: () => void
 }
 
-export const TransactionForm: React.FC<TransactionFormProps> = ({ type, onClose }) => {
-  const [value, setValue] = useState('');
-  const [dateType, setDateType] = useState('today');
-  const [customDate, setCustomDate] = useState(new Date().toISOString().split('T')[0]);
+export  function TransactionForm({ type, onClose }: TransactionFormProps) {
+  const [value, setValue] = useState('')
+  const [dateType, setDateType] = useState('today')
+  const [customDate, setCustomDate] = useState(new Date().toISOString().split('T')[0])
+
+  const getTitle = () => {
+    switch (type) {
+      case 'income':
+        return 'Nova Receita'
+      case 'expense':
+        return 'Nova Despesa'
+      case 'goal':
+        return 'Nova Meta'
+    }
+  }
 
   return (
-    <Container type={type}>
-      <Header>
-        <IconButton color="inherit" size="small" onClick={onClose}>
-          <ArrowLeft /> {/* A seta agora fecha ou volta */}
-        </IconButton>
-        <Typography variant="h6" component="div" fontSize="1.2rem">
-          {type === 'expense' ? 'Despesa' : type === 'income' ? 'Receita' : 'Meta'}
-        </Typography>
-        <Button color="inherit" size="small">
-          Aplicar
-        </Button>
-      </Header>
-
-      <Form>
-        <TextField
-          fullWidth
-          label="Título"
-          variant="outlined"
-          size="small"
-          sx={{ mb: 2 }}
-        />
-
-        <TextField
-          fullWidth
-          label="Descrição"
-          variant="outlined"
-          multiline
-          rows={1}
-          size="small"
-          sx={{ mb: 2 }}
-        />
-
-        <TextField
-          fullWidth
-          label="Valor"
-          variant="outlined"
-          size="small"
-          type="number"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          sx={{ mb: 2 }}
-        />
-
-        {type !== 'goal' && (
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}>
-              Data
-            </Typography>
-            <ToggleButtonGroup
-              value={dateType}
-              exclusive
-              onChange={(e, value) => value && setDateType(value)}
-              fullWidth
-              sx={{ mb: 1 }}
+    <Slide direction="up" in mountOnEnter unmountOnExit>
+      <StyledPaper elevation={8}>
+        <Container type={type}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <IconButton 
+              onClick={onClose}
+              sx={{ 
+                color: 'white',
+                '&:hover': { 
+                  backgroundColor: alpha('#fff', 0.1) 
+                } 
+              }}
             >
-              <ToggleButton value="today" size="small">Hoje</ToggleButton>
-              <ToggleButton value="yesterday" size="small">Ontem</ToggleButton>
-              <ToggleButton value="custom" size="small">
-                <TextField
-                  type="date"
-                  size="small"
-                  value={customDate}
-                  onChange={(e) => setCustomDate(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  sx={{ width: '100%' }}
-                />
-              </ToggleButton>
-            </ToggleButtonGroup>
+              <ArrowLeft />
+            </IconButton>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              {getTitle()}
+            </Typography>
+            <Button 
+              variant="contained" 
+              size="small"
+              sx={{ 
+                bgcolor: 'white',
+                color: type === 'income' ? 'success.main' : type === 'expense' ? 'error.main' : 'warning.main',
+                '&:hover': {
+                  bgcolor: alpha('#fff', 0.9)
+                }
+              }}
+            >
+              Salvar
+            </Button>
           </Box>
-        )}
 
-        {type !== 'goal' && (
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel size="small">Categoria</InputLabel>
-            <Select label="Categoria" size="small">
-              <MenuItem value="food">Alimentação</MenuItem>
-              <MenuItem value="transport">Transporte</MenuItem>
-              <MenuItem value="bills">Contas</MenuItem>
-            </Select>
-          </FormControl>
-        )}
+          <Form>
+            <TextField
+              fullWidth
+              placeholder="Título da transação"
+              variant="outlined"
+              size="medium"
+              InputProps={{
+                startAdornment: <Tag className="w-4 h-4 mr-2 text-gray-400" />,
+              }}
+              sx={{ mb: 3 }}
+            />
 
-        {type === 'goal' && (
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel size="small">Período</InputLabel>
-            <Select label="Período" size="small">
-              <MenuItem value="short">Curto Prazo</MenuItem>
-              <MenuItem value="medium">Médio Prazo</MenuItem>
-              <MenuItem value="long">Longo Prazo</MenuItem>
-            </Select>
-          </FormControl>
-        )}
-      </Form>
-    </Container>
-  );
-};
+            <TextField
+              fullWidth
+              placeholder="Adicionar descrição"
+              variant="outlined"
+              multiline
+              rows={2}
+              size="medium"
+              InputProps={{
+                startAdornment: <ListPlus className="w-4 h-4 mr-2 text-gray-400" />,
+              }}
+              sx={{ mb: 3 }}
+            />
+
+            <TextField
+              fullWidth
+              placeholder="R$ 0,00"
+              variant="outlined"
+              size="medium"
+              type="number"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              InputProps={{
+                startAdornment: <Calculator className="w-4 h-4 mr-2 text-gray-400" />,
+              }}
+              sx={{ mb: 3 }}
+            />
+
+            {type !== 'goal' && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.secondary' }}>
+                  Data da transação
+                </Typography>
+                <StyledToggleButtonGroup
+                  value={dateType}
+                  exclusive
+                  onChange={(e, value) => value && setDateType(value)}
+                  fullWidth
+                  size="large"
+                >
+                  <ToggleButton value="today">Hoje</ToggleButton>
+                  <ToggleButton value="yesterday">Ontem</ToggleButton>
+                  <ToggleButton value="custom">
+                    <TextField
+                      type="date"
+                      size="small"
+                      value={customDate}
+                      onChange={(e) => setCustomDate(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      sx={{ 
+                        width: '100%',
+                        '& .MuiInputBase-input': { 
+                          color: dateType === 'custom' ? 'primary.contrastText' : 'inherit' 
+                        }
+                      }}
+                    />
+                  </ToggleButton>
+                </StyledToggleButtonGroup>
+              </Box>
+            )}
+
+            {type !== 'goal' ? (
+              <FormControl fullWidth>
+                <InputLabel>Categoria</InputLabel>
+                <Select
+                  label="Categoria"
+                  size="medium"
+                  defaultValue=""
+                  sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
+                >
+                  <MenuItem value="food">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      🍽️ Alimentação
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="transport">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      🚗 Transporte
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="bills">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      📄 Contas
+                    </Box>
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            ) : (
+              <FormControl fullWidth>
+                <InputLabel>Período</InputLabel>
+                <Select
+                  label="Período"
+                  size="medium"
+                  defaultValue=""
+                  sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
+                >
+                  <MenuItem value="short">Curto Prazo</MenuItem>
+                  <MenuItem value="medium">Médio Prazo</MenuItem>
+                  <MenuItem value="long">Longo Prazo</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          </Form>
+        </Container>
+      </StyledPaper>
+    </Slide>
+  )
+}
+
