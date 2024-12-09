@@ -7,6 +7,7 @@ import { Profile } from "./screens/profile";
 import { Login } from "./screens/login";
 import LoginLayout from "./layoutLogin";
 import { Icon } from "./screens/icon";
+import { Signup } from "./screens/signup";
 
 
 
@@ -18,6 +19,8 @@ export function Router(){
        
       <Routes>
       <Route path="/login" element={<LoginLayout><Login /></LoginLayout>} />
+      <Route path="/signup" element={<LoginLayout><Signup /></LoginLayout>} />
+
       <Route path="/icon" element={<LoginLayout><Icon /></LoginLayout>} />
 
       

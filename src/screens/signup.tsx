@@ -17,14 +17,15 @@ import {
   useTheme,
   useMediaQuery
 } from '@mui/material'
-import { Google, Visibility, VisibilityOff, Mail } from '@mui/icons-material'
+import { Google, Visibility, VisibilityOff, Mail, Person } from '@mui/icons-material'
 import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 const MotionBox = motion(Box)
 
-export function Login() {
+export function Signup() {
   const [showPassword, setShowPassword] = useState(false)
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -33,7 +34,7 @@ export function Login() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    console.log('Login submitted', { email, password })
+    console.log('Signup submitted', { name, email, password })
   }
 
   return (
@@ -77,7 +78,7 @@ export function Login() {
           </MotionBox>
 
           <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 'medium' }}>
-            Bem-vindo de volta!
+            Crie sua conta
           </Typography>
 
           <Button
@@ -94,7 +95,7 @@ export function Login() {
               },
             }}
           >
-            Entrar com o Google
+            Cadastrar com o Google
           </Button>
 
           <Divider sx={{ width: '100%', my: 2 }}>ou</Divider>
@@ -105,6 +106,24 @@ export function Login() {
               onSubmit={handleSubmit}
               sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}
             >
+              <TextField
+                fullWidth
+                label="Nome"
+                placeholder="Digite seu nome"
+                required
+                type="text"
+                variant="outlined"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
               <TextField
                 fullWidth
                 label="Email"
@@ -147,14 +166,6 @@ export function Login() {
                 }}
               />
 
-              <Link
-                href="#"
-                underline="hover"
-                sx={{ alignSelf: 'flex-end', color: theme.palette.primary.main, textDecoration: 'none' }}
-              >
-                Esqueceu a senha? Recuperar conta
-              </Link>
-
               <NavLink to='/' style={{ textDecoration: 'none', width: '100%' }}>
                 <Button
                   type="submit"
@@ -171,11 +182,19 @@ export function Login() {
                     },
                   }}
                 >
-                  Entrar
+                  Criar conta
                 </Button>
               </NavLink>
             </Box>
           </Fade>
+
+          <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
+            Ao continuar, você concorda com nossos{' '}
+            <Link href="#" underline="hover" sx={{ color: theme.palette.primary.main }}>
+              Termos de Uso
+            </Link>
+            .
+          </Typography>
 
           <NavLink to="/signup" style={{ textDecoration: 'none', width: '100%' }}>
             <Button
@@ -185,7 +204,7 @@ export function Login() {
                 textTransform: 'none',
               }}
             >
-              Não tem uma conta? Criar conta
+              Já possui uma conta? Entrar
             </Button>
           </NavLink>
         </Box>
