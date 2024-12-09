@@ -1,104 +1,48 @@
-import styled from 'styled-components';
-import { Target, TrendingUp, Coffee, Car, Home } from 'lucide-react';
 
-const Container = styled.div`
-  padding: 1rem;
-`;
+import { useState } from 'react'
+import { 
+  Box,
+  Card,
+  Typography,
+  IconButton,
+  LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Menu,
+  MenuItem,
+  styled
+} from '@mui/material'
+import { Target, TrendingUp, Coffee, Car, Home, MoreVertical, Edit2, Plus } from 'lucide-react'
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  
-  h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-`;
+const IconWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'color',
+})<{ color: string }>(({ color }) => ({
+  width: 40,
+  height: 40,
+  borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: color,
+  color: 'white',
+}))
 
-const GoalCard = styled.div`
-  background: #f5f6fa;
-  border-radius: 1rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-`;
+interface Goal {
+  id: number
+  title: string
+  description: string
+  current: number
+  target: number
+  icon: any
+  color: string
+}
 
-const GoalHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-`;
-
-const IconWrapper = styled.div<{ color: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${props => props.color};
-  color: white;
-`;
-
-const GoalInfo = styled.div`
-  flex: 1;
-  
-  h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-  
-  p {
-    font-size: 0.875rem;
-    color: #666;
-  }
-`;
-
-const ProgressBar = styled.div`
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  margin: 0.5rem 0;
-  overflow: hidden;
-`;
-
-const Progress = styled.div<{ width: number; color: string }>`
-  height: 100%;
-  width: ${props => props.width}%;
-  background: ${props => props.color};
-  transition: width 0.3s ease;
-`;
-
-const GoalAmount = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.875rem;
-  color: #666;
-  
-  span:last-child {
-    font-weight: 600;
-  }
-`;
-
-const AddGoalButton = styled.button`
-  width: 100%;
-  padding: 1rem;
-  border: 2px dashed #1a73e8;
-  border-radius: 1rem;
-  background: none;
-  color: #1a73e8;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-`;
-
-const GoalsSection = () => {
-  const goals = [
+export default function GoalsSection() {
+  const [goals, setGoals] = useState<Goal[]>([
     {
       id: 1,
       title: 'Investimentos',
@@ -126,47 +70,178 @@ const GoalsSection = () => {
       icon: Car,
       color: '#ea4335'
     }
-  ];
+  ])
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
+  const [editValue, setEditValue] = useState('')
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [addValueDialogOpen, setAddValueDialogOpen] = useState(false)
+  const [additionalValue, setAdditionalValue] = useState('')
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, goal: Goal) => {
+    setAnchorEl(event.currentTarget)
+    setSelectedGoal(goal)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleEditClick = () => {
+    if (selectedGoal) {
+      setEditValue(selectedGoal.target.toString())
+      setEditDialogOpen(true)
+    }
+    handleMenuClose()
+  }
+
+  const handleAddValueClick = () => {
+    setAddValueDialogOpen(true)
+    handleMenuClose()
+  }
+
+  const handleSaveEdit = () => {
+    if (selectedGoal) {
+      const newGoals = goals.map(goal => 
+        goal.id === selectedGoal.id 
+          ? { ...goal, target: Number(editValue) }
+          : goal
+      )
+      setGoals(newGoals)
+    }
+    setEditDialogOpen(false)
+  }
+
+  const handleSaveAddValue = () => {
+    if (selectedGoal) {
+      const newGoals = goals.map(goal => 
+        goal.id === selectedGoal.id 
+          ? { ...goal, current: goal.current + Number(additionalValue) }
+          : goal
+      )
+      setGoals(newGoals)
+    }
+    setAddValueDialogOpen(false)
+    setAdditionalValue('')
+  }
 
   return (
-    <Container>
-      <Header>
-        <h2>Minhas Metas</h2>
+    <Box sx={{ p: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6" fontWeight="600">
+          Minhas Metas
+        </Typography>
         <Target size={24} />
-      </Header>
+      </Box>
 
       {goals.map(goal => (
-        <GoalCard key={goal.id}>
-          <GoalHeader>
+        <Card key={goal.id} sx={{ mb: 2, p: 2, borderRadius: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <IconWrapper color={goal.color}>
               <goal.icon size={20} />
             </IconWrapper>
-            <GoalInfo>
-              <h3>{goal.title}</h3>
-              <p>{goal.description}</p>
-            </GoalInfo>
-          </GoalHeader>
+            <Box sx={{ flex: 1, ml: 2 }}>
+              <Typography variant="subtitle1" fontWeight="600">
+                {goal.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {goal.description}
+              </Typography>
+            </Box>
+            <IconButton onClick={(e) => handleMenuClick(e, goal)}>
+              <MoreVertical size={20} />
+            </IconButton>
+          </Box>
           
-          <ProgressBar>
-            <Progress 
-              width={(goal.current / goal.target) * 100} 
-              color={goal.color}
-            />
-          </ProgressBar>
+          <LinearProgress
+            variant="determinate"
+            value={(goal.current / goal.target) * 100}
+            sx={{
+              height: 8,
+              borderRadius: 4,
+              bgcolor: '#e0e0e0',
+              mb: 1,
+              '& .MuiLinearProgress-bar': {
+                bgcolor: goal.color,
+              },
+            }}
+          />
           
-          <GoalAmount>
-            <span>R$ {goal.current.toLocaleString('pt-BR')}</span>
-            <span>R$ {goal.target.toLocaleString('pt-BR')}</span>
-          </GoalAmount>
-        </GoalCard>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', color: 'text.secondary' }}>
+            <Typography variant="body2">
+              R$ {goal.current.toLocaleString('pt-BR')}
+            </Typography>
+            <Typography variant="body2" fontWeight="600">
+              R$ {goal.target.toLocaleString('pt-BR')}
+            </Typography>
+          </Box>
+        </Card>
       ))}
 
-      {/* <AddGoalButton>
-        <Target size={20} />
-        Adicionar nova meta
-      </AddGoalButton> */}
-    </Container>
-  );
-};
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleEditClick}>
+          <Edit2 size={16} style={{ marginRight: 8 }} />
+          Editar meta
+        </MenuItem>
+        <MenuItem onClick={handleAddValueClick}>
+          <Plus size={16} style={{ marginRight: 8 }} />
+          Adicionar valor
+        </MenuItem>
+      </Menu>
 
-export default GoalsSection;
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+        <DialogTitle>Editar Meta</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Valor da meta"
+            type="number"
+            fullWidth
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            InputProps={{
+              startAdornment: <Typography sx={{ mr: 1 }}>R$</Typography>,
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={handleSaveEdit} variant="contained">
+            Salvar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={addValueDialogOpen} onClose={() => setAddValueDialogOpen(false)}>
+        <DialogTitle>Adicionar Valor</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Valor a adicionar"
+            type="number"
+            fullWidth
+            value={additionalValue}
+            onChange={(e) => setAdditionalValue(e.target.value)}
+            InputProps={{
+              startAdornment: <Typography sx={{ mr: 1 }}>R$</Typography>,
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAddValueDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={handleSaveAddValue} variant="contained">
+            Salvar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  )
+}
+
